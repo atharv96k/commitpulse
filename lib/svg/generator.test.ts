@@ -386,6 +386,20 @@ describe('generateSVG', () => {
       expect(svg).toContain('prefers-reduced-motion');
     });
 
+    it('includes the scan-line class on the radar rect in the static renderer output', () => {
+      const staticParams: BadgeParams = {
+        user: 'avi',
+        autoTheme: false, // forces static renderer path
+      };
+      const svg = generateSVG(mockStats, staticParams, mockCalendar);
+      expect(svg).toContain('class="cp-accent-fill scan-line"');
+    });
+
+    it('includes the scan-line class on the radar rect in the auto-theme renderer output', () => {
+      const svg = generateSVG(mockStats, autoParams, mockCalendar); // autoParams has autoTheme: true
+      expect(svg).toContain('class="cp-accent-fill scan-line"');
+    });
+
     it('emits tower-raising CSS animations and staggered delays in auto mode', () => {
       const svg = generateSVG(mockStats, autoParams, mockCalendar);
 
