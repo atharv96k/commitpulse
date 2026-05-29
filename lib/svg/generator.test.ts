@@ -387,16 +387,17 @@ describe('generateSVG', () => {
     });
 
     it('includes the scan-line class on the radar rect in the static renderer output', () => {
-      const staticParams: BadgeParams = {
+      const staticParams = {
         user: 'avi',
-        autoTheme: false, // forces static renderer path
-      };
+        autoTheme: false,
+      } as unknown as BadgeParams;
+
       const svg = generateSVG(mockStats, staticParams, mockCalendar);
       expect(svg).toContain('class="cp-accent-fill scan-line"');
     });
 
     it('includes the scan-line class on the radar rect in the auto-theme renderer output', () => {
-      const svg = generateSVG(mockStats, autoParams, mockCalendar); // autoParams has autoTheme: true
+      const svg = generateSVG(mockStats, autoParams, mockCalendar);
       expect(svg).toContain('class="cp-accent-fill scan-line"');
     });
 
