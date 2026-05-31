@@ -18,6 +18,18 @@ describe('streakParamsSchema — grace fallback behavior', () => {
     expect(parse({ grace: '-1' }).grace).toBe(0);
   });
 
+  it('falls back or clamps a negative non-integer grace input safely', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'octocat',
+      grace: '-1.5',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.grace).toBe(0);
+    }
+  });
+
   it('falls back to 1 for non-numeric grace value', () => {
     expect(parse({ grace: 'abc' }).grace).toBe(1);
   });
