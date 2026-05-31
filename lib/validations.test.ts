@@ -1013,3 +1013,34 @@ describe('streakParamsSchema — layout query validation boundaries (Variation 2
     }
   });
 });
+
+/* ==========================================================================
+ * LAYOUT PARAMETER — QUERY VALIDATION BOUNDARIES (VARIATION 3)
+ * ========================================================================== */
+
+describe('streakParamsSchema date validation boundaries (Variation 3)', () => {
+  it('rejects malformed or impossible ISO8601 date formats with a validation error', () => {
+    const invalidPayload = {
+      user: 'atharv96k',
+      from: '2026-15-40', // Impossible month (15) and day (40)
+    };
+
+    const parseResult = streakParamsSchema.safeParse(invalidPayload);
+
+    expect(parseResult.success).toBe(false);
+    if (!parseResult.success) {
+      const fieldErrors = parseResult.error.flatten().fieldErrors;
+      expect(fieldErrors.from).toBeDefined();
+    }
+  });
+
+  it('accepts perfectly structured valid ISO8601 calendar date formats', () => {
+    const validPayload = {
+      user: 'atharv96k',
+      from: '2026-05-31',
+    };
+
+    const parseResult = streakParamsSchema.safeParse(validPayload);
+    expect(parseResult.success).toBe(true);
+  });
+});
