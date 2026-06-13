@@ -23,6 +23,12 @@ vi.mock('./ContributorsClient', () => ({
 describe('ContributorsPage Accessibility', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => [],
+    } as unknown as Response);
   });
 
   it('renders the contributors client container', async () => {
@@ -74,8 +80,6 @@ describe('ContributorsPage Accessibility', () => {
   });
 
   it('renders successfully when contributor data is empty', async () => {
-    const originalFetch = global.fetch;
-
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
@@ -91,7 +95,5 @@ describe('ContributorsPage Accessibility', () => {
     render(page);
 
     expect(screen.getByTestId('contributors-client')).toBeInTheDocument();
-
-    global.fetch = originalFetch;
   });
 });
