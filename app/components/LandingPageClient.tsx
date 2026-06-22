@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { trackUser } from '@/utils/tracking';
 import { useTranslation } from '@/context/TranslationContext';
+import { renderHeroTitle } from './heroTitle';
 
 import Link from 'next/link';
 import { useRef, useState, useEffect } from 'react';
@@ -581,11 +582,9 @@ export default function LandingPageClient() {
 
           <div ref={heroRef}>
             <h1 className="hero-text opacity-0 translate-y-10 mb-8 bg-gradient-to-br from-gray-900 via-black to-gray-600 dark:from-white dark:via-gray-100 dark:to-gray-500 bg-clip-text text-transparent text-5xl font-black tracking-tighter md:text-8xl pb-2">
-              Elevate Your <br />{' '}
-              <span className="contribution-text inline-block bg-[length:300%_300%] bg-gradient-to-r from-emerald-400 via-cyan-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm">
-                Contribution
-              </span>{' '}
-              Story.
+              {renderHeroTitle(
+                t('landing.title', { defaultValue: 'Elevate Your\n{Contribution} Story.' })
+              )}
             </h1>
           </div>
 
