@@ -773,11 +773,30 @@ return c`;
       return finalFallback;
     };
 
+    let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
+
     const promise = executeAndLock().finally(() => {
+      if (timeoutTimer) clearTimeout(timeoutTimer);
       this.localLocks.delete(key);
     });
 
     this.localLocks.set(key, promise);
+
+    // Safety Eviction: Forcefully evict locks that hang longer than 60s
+    // to prevent memory leaks (fixes Issue #6177).
+    timeoutTimer = setTimeout(() => {
+      if (this.localLocks.get(key) === promise) {
+        this.localLocks.delete(key);
+        logger.error('Safety eviction triggered for hanging lock', {
+          component: 'DistributedCache',
+          key,
+        });
+      }
+    }, 60000);
+
+    if (timeoutTimer && typeof timeoutTimer.unref === 'function') {
+      timeoutTimer.unref();
+    }
 
     return promise;
   }
