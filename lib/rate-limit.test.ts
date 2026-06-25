@@ -189,7 +189,7 @@ describe('rateLimit', () => {
       remaining: 4,
       reset: 61000,
     });
-    expect(incrSpy).toHaveBeenCalledWith('ratelimit:atomic-test-function', 60000);
+    expect(incrSpy).toHaveBeenCalledWith('ratelimit:default:atomic-test-function', 60000);
 
     incrSpy.mockRestore();
   });

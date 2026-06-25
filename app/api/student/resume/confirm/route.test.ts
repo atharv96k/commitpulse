@@ -20,7 +20,12 @@ vi.mock('@/lib/rate-limit', () => {
         return Promise.resolve(true);
       }
       checkWithResult() {
-        return Promise.resolve({ success: true, limit: 5, remaining: 4, reset: Date.now() + 60000 });
+        return Promise.resolve({
+          success: true,
+          limit: 5,
+          remaining: 4,
+          reset: Date.now() + 60000,
+        });
       }
     },
     getRateLimitHeaders: vi.fn(() => ({

@@ -42,12 +42,7 @@ export async function middleware(request: NextRequest) {
         status: 429,
         headers: {
           'Content-Type': 'application/json',
-
           ...getRateLimitHeaders(result),
-
-          'X-RateLimit-Limit': result.limit.toString(),
-          'X-RateLimit-Remaining': result.remaining.toString(),
-          'X-RateLimit-Reset': result.reset.toString(),
           ...securityHeaders,
         },
       }

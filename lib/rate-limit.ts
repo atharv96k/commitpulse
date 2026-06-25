@@ -1,3 +1,4 @@
+import 'server-only';
 import { DistributedCache } from './cache';
 
 interface RateLimitResult {
@@ -298,8 +299,9 @@ export class RateLimiter {
       console.error('RateLimiter remaining() KV error, falling back to memory');
     }
 
-    const count = ((await this.cache.get(`ratelimit:${ip}`)) as unknown as number) ?? 0;
-    return Math.max(0, this.limit - count);
+    const cached = ((await this.cache.get(`ratelimit:${ip}`)) as unknown as number) ?? 0;
+
+    return Math.max(0, this.limit - cached);
   }
 
   allow(ip: string): void {
@@ -342,10 +344,13 @@ const trackers = new DistributedCache<{ count: number; resetAt: number }>(2000, 
  * @param ip - The IP address to track.
  * @param limit - Maximum number of requests allowed in the window. Defaults to 60.
  * @param windowMs - Time window in milliseconds. Defaults to 60000 (1 minute).
+ * @param namespace - Isolation namespace for the cache key. Different namespaces
+ *   use independent counters, preventing cross-route interference.
+ *   Defaults to `'default'`.
  * @returns A {@link RateLimitResult} containing success status, limit, remaining count, and reset time.
  *
  * @example
- * const result = rateLimit(ip);
+ * const result = rateLimit(ip, 60, 60000, 'api');
  * if (!result.success) {
  *   return new Response("Too Many Requests", { status: 429 });
  * }
@@ -353,12 +358,14 @@ const trackers = new DistributedCache<{ count: number; resetAt: number }>(2000, 
 export async function rateLimit(
   ip: string,
   limit: number = 60,
-  windowMs: number = 60000
+  windowMs: number = 60000,
+  namespace: string = 'default'
 ): Promise<RateLimitResult> {
   if (!ip || ip.trim().length === 0) {
     throw new TypeError('Cache key cannot be empty');
   }
 
+  const cacheKey = `ratelimit:${namespace}:${ip}`;
   const now = Date.now();
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
@@ -378,14 +385,15 @@ export async function rateLimit(
         success: allowed === 1,
         limit,
         remaining: Math.max(0, limit - count),
-        reset: resetMs, // exact TTL from Redis, not an approximation
+        reset: resetMs,
       };
     }
 
     console.error('Rate limit KV error, falling back to memory');
   }
 
-  const count = await trackers.incr(`ratelimit:${ip}`, windowMs);
+  const count = await trackers.incr(cacheKey, windowMs);
+
   const resetAt = now + windowMs;
 
   return {
@@ -403,12 +411,12 @@ export async function rateLimit(
  * `result.reset` is an epoch-ms value so we convert before setting the header.
  */
 export function getRateLimitHeaders(result: RateLimitResult) {
-  const retryAfterSeconds = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000));
+  const retryAfter = Math.max(0, Math.ceil((result.reset - Date.now()) / 1000));
 
   return {
     'X-RateLimit-Limit': result.limit.toString(),
     'X-RateLimit-Remaining': result.remaining.toString(),
     'X-RateLimit-Reset': result.reset.toString(),
-    'Retry-After': retryAfterSeconds.toString(),
+    'Retry-After': retryAfter.toString(),
   };
 }
