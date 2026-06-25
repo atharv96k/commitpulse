@@ -5,6 +5,7 @@ import { rateLimit } from '@/lib/rate-limit';
 
 vi.mock('@/lib/rate-limit', () => ({
   rateLimit: vi.fn(),
+  getRateLimitHeaders: vi.fn(() => ({})),
 }));
 
 describe('middleware', () => {
@@ -99,7 +100,7 @@ describe('middleware', () => {
 
     await middleware(request);
 
-    expect(rateLimit).toHaveBeenCalledWith('203.0.113.10', 60, 60000);
+    expect(rateLimit).toHaveBeenCalledWith('203.0.113.10', 60, 60000, 'api');
   });
 
   it('ignores spoofed X-Forwarded-For when request.ip is present', async () => {
@@ -119,7 +120,7 @@ describe('middleware', () => {
 
     await middleware(request);
 
-    expect(rateLimit).toHaveBeenCalledWith('203.0.113.10', 60, 60000);
+    expect(rateLimit).toHaveBeenCalledWith('203.0.113.10', 60, 60000, 'api');
   });
 
   it('defaults to 127.0.0.1 when no request.ip and headers are untrusted/missing', async () => {
@@ -134,6 +135,6 @@ describe('middleware', () => {
 
     await middleware(request);
 
-    expect(rateLimit).toHaveBeenCalledWith('127.0.0.1', 60, 60000);
+    expect(rateLimit).toHaveBeenCalledWith('127.0.0.1', 60, 60000, 'api');
   });
 });
