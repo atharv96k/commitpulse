@@ -25,7 +25,7 @@ import CommitClock from './CommitClock';
 import Heatmap from './Heatmap';
 import HistoricalTrendView from './HistoricalTrendView';
 import AIInsights from './AIInsights';
-import StatsCard from './StatsCard';
+import ContributionInsightsPanel from './ContributionInsightsPanel';
 import RepositoryGraph from './RepositoryGraph';
 import HallOfFame from './HallOfFame';
 import ComparisonStatsCard from './ComparisonStatsCard';
@@ -725,30 +725,11 @@ export default function DashboardClient({
           </div>
 
           <aside className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
-              <StatsCard
-                title="Current Streak"
-                value={initialData.stats.currentStreak.toString()}
-                description="Days"
-                icon="Flame"
-                showUTCDisclaimer={true}
-                utcDate={new Date().toISOString().split('T')[0]}
-              />
-
-              <StatsCard
-                title="Peak Streak"
-                value={initialData.stats.peakStreak.toString()}
-                description="Days"
-                icon="TrendingUp"
-              />
-
-              <StatsCard
-                title="Contributions"
-                value={initialData.stats.totalContributions.toString()}
-                description={period.label}
-                icon="GitCommit"
-              />
-            </div>
+            <ContributionInsightsPanel
+              stats={initialData.stats}
+              activity={initialData.activity}
+              periodLabel={period.label}
+            />
 
             <AIInsights insights={initialData.insights} />
 
