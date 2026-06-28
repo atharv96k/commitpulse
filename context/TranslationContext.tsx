@@ -84,15 +84,15 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     // English text on first load.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    const storedLang = localStorage.getItem('language') as Language;
+    const storedLang = localStorage.getItem('language');
     const supportedLangs = Object.keys(translations) as Language[];
 
-    if (storedLang && supportedLangs.includes(storedLang)) {
-      setLanguage(storedLang);
+    if (storedLang && supportedLangs.includes(storedLang as Language)) {
+      setLanguage(storedLang as Language);
     } else {
-      const browserLang = navigator.language.split('-')[0] as Language;
-      if (supportedLangs.includes(browserLang)) {
-        setLanguage(browserLang);
+      const browserLang = navigator.language.split('-')[0];
+      if (supportedLangs.includes(browserLang as Language)) {
+        setLanguage(browserLang as Language);
         localStorage.setItem('language', browserLang);
       } else {
         setLanguage('en');
