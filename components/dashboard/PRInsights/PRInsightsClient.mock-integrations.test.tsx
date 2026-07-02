@@ -71,7 +71,7 @@ describe('PRInsightsClient - Asynchronous Service Layer Mocking & Local Cache St
     // Populate cache
     localStorage.setItem('pr-insights-testuser', JSON.stringify(mockData));
     const fetchSpy = vi.fn();
-    global.fetch = fetchSpy as any;
+    global.fetch = fetchSpy as unknown as typeof fetch;
 
     render(<PRInsightsClient username="testuser" />);
 
