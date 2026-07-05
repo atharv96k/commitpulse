@@ -12,10 +12,10 @@ describe('NotFound TypeScript Compiler Validation & Schema Constraints Stability
   });
 
   it('2. asserts that invalid prop parameters are blocked during static type checking', () => {
-    type NotFoundProps = Parameters<typeof NotFound>[0];
+    type NotFoundParams = Parameters<typeof NotFound>;
 
-    expectTypeOf<NotFoundProps>().toEqualTypeOf<undefined>();
-    expectTypeOf<{ invalidProp: string }>().not.toMatchTypeOf<NotFoundProps>();
+    expectTypeOf<NotFoundParams>().toEqualTypeOf<[]>();
+    expectTypeOf<{ invalidProp: string }>().not.toMatchTypeOf<NotFoundParams>();
   });
 
   it('3. verifies custom types accept optional values without compile errors', () => {
@@ -26,12 +26,11 @@ describe('NotFound TypeScript Compiler Validation & Schema Constraints Stability
   });
 
   it('4. verifies internal function signatures return correct types', () => {
-    const component = NotFound as unknown as Record<string, unknown>;
-    expectTypeOf(component).not.toHaveProperty('displayName');
+    expectTypeOf<typeof NotFound>().not.toHaveProperty('displayName');
   });
 
   it('5. verifies schema constraints on JSX rendering output', () => {
-    const element = NotFound();
-    expectTypeOf(element).toMatchTypeOf<JSX.Element>();
+    type ElementType = ReturnType<typeof NotFound>;
+    expectTypeOf<ElementType>().toMatchTypeOf<JSX.Element>();
   });
 });
