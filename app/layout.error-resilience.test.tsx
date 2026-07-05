@@ -1,11 +1,11 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import RootLayout from './layout';
 
 // Mock telemetry tracker
-const mockTelemetryLogger = vi.fn();
+const mockTelemetryLogger: Mock = vi.fn();
 
 // Mock all layout subcomponents like other layout.test files do
 vi.mock('next/font/google', () => ({
@@ -110,7 +110,7 @@ const BuggyServiceWorkerChild = () => {
 };
 
 describe('Layout Component: Hydration Stability, Exception Safety & Error Fallbacks', () => {
-  let mockReset: ReturnType<typeof vi.fn>;
+  let mockReset: Mock;
 
   beforeEach(() => {
     mockReset = vi.fn();
