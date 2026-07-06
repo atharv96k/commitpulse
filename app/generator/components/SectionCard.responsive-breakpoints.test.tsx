@@ -120,7 +120,7 @@ describe('SectionCard Responsive Multi-device Columns & Mobile Viewport Layouts'
   });
 
   // 5. Assert mobile-specific toggle states respond cleanly.
-  it('asserts mobile-specific toggle states respond cleanly', () => {
+  it('asserts mobile-specific toggle states respond cleanly', async () => {
     setViewportWidth(375); // Ensuring we are testing the mobile interaction explicitly
 
     render(
@@ -142,8 +142,16 @@ describe('SectionCard Responsive Multi-device Columns & Mobile Viewport Layouts'
     expect(screen.getByTestId('toggle-content')).toBeInTheDocument();
     expect(toggleButton.getAttribute('aria-expanded')).toBe('true');
 
+    // Grab the svg and read its class string in a way that's compatible with SVG in JSDOM.
     const chevronIcon = toggleButton.querySelector('svg');
-    // Mobile toggle animation
-    expect(chevronIcon?.className).toContain('rotate-180');
+    // Wait for any state-driven class change to apply
+    await new Promise((r) => setTimeout(r, 0));
+    const svgClassAttr =
+      chevronIcon?.getAttribute('class') ??
+      // For some environments SVG className is an object with baseVal
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (chevronIcon?.className && (chevronIcon.className as any).baseVal) ??
+      '';
+    expect(svgClassAttr).toContain('rotate-180');
   });
 });
