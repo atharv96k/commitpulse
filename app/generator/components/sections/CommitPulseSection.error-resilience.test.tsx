@@ -19,7 +19,7 @@ vi.mock('../SectionCard', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../SectionCard')>();
   return {
     ...actual,
-    SectionCard: (props: any) => {
+    SectionCard: (props: React.ComponentProps<typeof actual.SectionCard>) => {
       if (props.title === 'THROW_RUNTIME_ERROR') {
         throw new Error('Nested Runtime Exception');
       }
